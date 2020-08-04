@@ -17,7 +17,9 @@ function comp_info{
             "Ram_Size" = Get-WMIObject -class Win32_PhysicalMemory -ComputerName $compName | Measure-Object -Property capacity -Sum | % {[Math]::Round(($_.sum / 1GB),2)}
         }
         
-        $returnObj += $customObj | select HDD_Freespace,HDD_Size,Ram_Size
+        $result = $customObj | select HDD_Freespace,HDD_Size,Ram_Size
+        
+        return $result
     }
 }
 
@@ -25,5 +27,5 @@ function comp_info{
 $ADCOMPS=@(Get-ADComputer -Filter {OperatingSystem -like "Windows Server*"}   -Properties Name | select name | ft -HideTableHeaders)
 
 foreach ($comp in $ADCOMPS){
-    comp_info -compName $comp
+    $getcomp += comp_info -compName $comp
 }
