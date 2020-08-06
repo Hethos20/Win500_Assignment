@@ -5,6 +5,7 @@ function comp_info{
 
     # if computer is online
     if (Test-Connection $compName -Count 1){
+        Write-Host "$compName is online"
         $customObj = New-Object psobject -Property @{`
             "Computer" = Invoke-Command -ComputerName $compName -ScriptBlock {$env:computername};
             "HDD_Freespace" = Get-WmiObject Win32_LogicalDisk -ComputerName $compName | Measure-Object -Property Freespace -Sum | % {[Math]::Round(($_.sum / 1MB),2)};
@@ -12,19 +13,23 @@ function comp_info{
             "Ram_Size" = Get-WMIObject -class Win32_PhysicalMemory -ComputerName $compName | Measure-Object -Property capacity -Sum | % {[Math]::Round(($_.sum / 1GB),2)}
         }
         
-        $result = $customObj | select HDD_Freespace,HDD_Size,Ram_Size
+        $result = $customObj | select Computer,HDD_Freespace,HDD_Size,Ram_Size
         
         return $result
    }
 
 }
 
-#get all computers that are in domain
+# get all computers that are in domain
 $tempFile = @(Get-ADComputer -Filter * -Properties Name | Select-Object Name | ft -HideTableHeaders | Out-File .\Documents\computers.txt)
+# get all computer names
 $ADComp = Get-Content -Path .\Documents\computers.txt
-$ADComp = $ADComp | Where-Object { [string]::IsNullOrWhiteSpace($_.DisplayName)}
-
+# remove all empty lines
+$ADComp = $ADComp | where{$_ -ne ""}
 
 foreach ($comp in $ADComp){
-    $getcomp += comp_info -compName $comp
+    # remove all leading white spaces
+    $computer = $comp.Trim()
+
+    $getcomp += comp_info -compName $computer
 }
