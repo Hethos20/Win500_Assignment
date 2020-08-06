@@ -1,4 +1,6 @@
-﻿$compName = $args[0]
+# to be stored in C:\temp on SRV1-AD
+
+$compName = $args[0]
 $power = $args[1]
 
 if ($power -eq $true) {
