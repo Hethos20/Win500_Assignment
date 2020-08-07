@@ -1,3 +1,33 @@
+Function CreateUserSession{
+    param
+    (
+        $userSession,
+        $compName
+    )
+
+    # create session
+    $theSession = New-PSSession -ComputerName $compName -Name $userSession
+    
+    # list all sessions
+    Get-PSSession
+}
+
+Function EnterUserSession{
+    param(
+    $sessionName
+    )
+    
+    # go to session
+    Enter-PSSession -Session $sessionName
+
+    # wait for user to agree to kill session
+    Read-Host "Kill Session?"
+    
+    # Kill the pssession
+    Remove-PSSession -Session $sessionName
+}
+
+
 # Design style of the table
 $Header = @"
 <style>
