@@ -80,3 +80,46 @@ TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
     # open the html file in browser
     Invoke-Item C:\temp\report.html
 }
+
+Write-Host "1) Server Inventory`n2) Sessions`n3) Remote Functions`n4) User Management`n5) Module`n6) Endpoints`n7) Picture Management`n8) Firewall`n9) Quit"
+$choice = Read-Host "Choose an option from the list (1-8)"
+
+$exit = $false
+
+DO
+{
+    switch ($choice)
+    {
+        1 {ServerInventory}
+        2 {
+            DO
+            {
+                $theChoice = Read-Host "1:Create session or 2:Enter session?"; 
+                if ($theChoice -eq "1") 
+                {
+                    $sessionName = Read-Host "Enter name of session" 
+                    $CompName = Read-Host "Enter name of computer" 
+                    CreateUserSession $sessionName $CompName
+                    $1exit = $true
+                }
+                elseif ($theChoice -eq "2")
+                {
+                    $sessionName = Read-Host "Enter name of session"
+                    Enter-PSSession $sessionName
+                    $1exit = $true
+                }
+                else{
+                    Write-Host "ERROR: incorrect option"
+                }
+            } while ($1exit = $false)
+          }
+        3 {}
+        4 {}
+        5 {}
+        6 {}
+        7 {}
+        8 {}
+        9 {Write-Host "Good Bye" $exit=$true}
+        default {Write-Host "Option not found"}
+    }
+} while ($exit = $false)
