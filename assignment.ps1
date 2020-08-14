@@ -30,12 +30,12 @@ Function EnterUserSession{
 Function ServerInventory{
     # Design style of the table
     $Header = @"
-    <style>
-    TABLE {border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;}
-    TH {border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: #72e4ff;}
-    TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
-    </style>
-    "@
+<style>
+TABLE {border-width: 1px; border-style: solid; border-color: black; border-collapse: collapse;}
+TH {border-width: 1px; padding: 3px; border-style: solid; border-color: black; background-color: #72e4ff;}
+TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
+</style>
+"@
 
     # get all computers that are in domain
     $tempFile = @(Get-ADComputer -Filter * -Properties Name | Select-Object Name | ft -HideTableHeaders | Out-File C:\temp\computers.txt)
