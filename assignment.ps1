@@ -81,6 +81,36 @@ TD {border-width: 1px; padding: 3px; border-style: solid; border-color: black;}
     Invoke-Item C:\temp\report.html
 }
 
+Function Firewall{
+
+    # get all computers that are in domain
+    Get-ADComputer -Filter * -Properties Name | Select-Object Name | ft -HideTableHeaders | Out-File "C:\temp\mysystems.txt"
+    # get all computer names
+    $ADComp = Get-Content -Path C:\temp\mysystems.txt
+    # remove all empty lines
+    $ADComp = $ADComp | where{$_ -ne ""}
+
+    $firewallStuff = @()
+
+    foreach($comp in $ADComp){
+        $computer = $comp.Trim()
+
+        # change firewall profile to true
+        Invoke-Command -ComputerName $computer -Credential Administrator -ScriptBlock {Set-NetFirewallProfile -Profile * -Enabled True}
+        # check firewall status
+        Invoke-Command -ComputerName $computer -ScriptBlock {Get-NetFirewallProfile | Select-Object Enabled}
+    }
+
+    Clear-Content C:\temp\firewall.txt
+
+    foreach($comp in $ADComp){
+        $computer = $comp.Trim()
+        Invoke-Command -ComputerName $computer -ScriptBlock {Get-NetFirewallRule | Select-Object Name} | Out-File -Append C:\temp\firewall.txt
+    }
+}
+
+clear
+
 Write-Host "1) Server Inventory`n2) Sessions`n3) Remote Functions`n4) User Management`n5) Module`n6) Endpoints`n7) Picture Management`n8) Firewall`n9) Quit"
 $choice = Read-Host "Choose an option from the list (1-8)"
 
@@ -118,8 +148,8 @@ DO
         5 {}
         6 {}
         7 {}
-        8 {}
-        9 {Write-Host "Good Bye" $exit=$true}
+        8 {Firewall}
+        9 {Write-Host "Good Bye"; $exit=$true}
         default {Write-Host "Option not found"}
     }
 } while ($exit = $false)
